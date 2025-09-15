@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 
-const messageText = `/ My Dearest BFF!
+const messageText = ` My Dearest BFF!
 
 Happy birthday! I’m sorry your special day had already passed before you received this letter. 
 

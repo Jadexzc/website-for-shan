@@ -4,7 +4,7 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Use dynamic port for production
 
 // Replace with your Discord webhook URL
 const webhookURL = 'https://discord.com/api/webhooks/1416826208808603738/oEFQFWBBnjkhCT2myvwO_IG-lcmR6vwi3MEWxK3nbIl1f21UCcNQvFFFZ_YctdtmsPCP';
@@ -12,18 +12,18 @@ const webhookURL = 'https://discord.com/api/webhooks/1416826208808603738/oEFQFWB
 // Middleware
 app.use(bodyParser.json());
 
-// Enable CORS for your frontend origin (allow localhost during dev and OnRender in production)
+// CORS Configuration (local and production)
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production'
-    ? 'https://website-for-shan.onrender.com' // OnRender URL in production
-    : 'http://localhost:3001', // Localhost for development
+    ? 'https://website-for-shan.onrender.com'  // OnRender URL for production
+    : 'http://localhost:3001', // Local development URL
   methods: 'GET,POST',
   allowedHeaders: 'Content-Type,Authorization',
 };
 
 app.use(cors(corsOptions));
 
-// Basic route
+// Basic route to test if server is running
 app.get('/', (req, res) => {
   res.send('Server is running. POST visitor data to /send-location');
 });
@@ -44,17 +44,17 @@ app.post('/send-location', async (req, res) => {
 **Timezone:** ${data.timezone || 'N/A'}`;
 
   try {
+    // Send the content to Discord webhook
     await axios.post(webhookURL, { content });
     console.log('Visitor data sent to Discord:', content);
     res.status(200).json({ message: 'Visitor data sent to Discord!' });
   } catch (err) {
-    console.error('Error sending data to Discord:', err.message);
+    console.error('Error sending data to Discord:', err); // Full error object
     res.status(500).json({ error: 'Failed to send data to Discord' });
   }
 });
 
-// Start server
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-  

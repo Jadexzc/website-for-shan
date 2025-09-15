@@ -18,10 +18,10 @@ async function sendToBackend() {
 
     console.log('Visitor data:', dataToSend);
 
-    // Manually set the backend URL based on the environment
+    // Dynamically set the backend URL based on environment (local or production)
     const backendUrl = window.location.hostname === 'localhost'
-      ? 'http://localhost:3000/send-location'  // Local development
-      : 'https://website-for-shan.onrender.com/send-location';  // Production URL
+      ? 'http://localhost:3000/send-location' // Local development
+      : 'https://website-for-shan.onrender.com/send-location'; // Production URL
 
     // Send visitor data to your backend
     const response = await fetch(backendUrl, {
@@ -32,8 +32,13 @@ async function sendToBackend() {
       body: JSON.stringify(dataToSend)
     });
 
-    const result = await response.json();
-    console.log('Backend response:', result);
+    // Log the response body for debugging
+    const responseText = await response.text();
+    console.log('Backend response:', responseText);
+
+    // Try to parse the response as JSON
+    const result = JSON.parse(responseText);
+    console.log('Parsed backend response:', result);
   } catch (err) {
     console.error('Error sending visitor data:', err);
   }

@@ -18,10 +18,10 @@ async function sendToBackend() {
 
     console.log('Visitor data:', dataToSend);
 
-    // Dynamically set backend URL based on environment (local or production)
-    const backendUrl = process.env.NODE_ENV === 'production'
-      ? 'https://website-for-shan.onrender.com/send-location'  // Production URL
-      : 'http://localhost:3000/send-location';  // Local development URL
+    // Manually set the backend URL based on the environment
+    const backendUrl = window.location.hostname === 'localhost'
+      ? 'http://localhost:3000/send-location'  // Local development
+      : 'https://website-for-shan.onrender.com/send-location';  // Production URL
 
     // Send visitor data to your backend
     const response = await fetch(backendUrl, {

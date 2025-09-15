@@ -4,7 +4,7 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Replace with your Discord webhook URL
 const webhookURL = 'https://discord.com/api/webhooks/1416826208808603738/oEFQFWBBnjkhCT2myvwO_IG-lcmR6vwi3MEWxK3nbIl1f21UCcNQvFFFZ_YctdtmsPCP';
@@ -12,10 +12,16 @@ const webhookURL = 'https://discord.com/api/webhooks/1416826208808603738/oEFQFWB
 // Middleware
 app.use(bodyParser.json());
 
-// Enable CORS for your frontend origin
-app.use(cors({
-  origin: 'http://localhost:3001' // your frontend URL
-}));
+// Enable CORS for your frontend origin (allow localhost during dev and OnRender in production)
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? 'https://website-for-shan.onrender.com' // OnRender URL in production
+    : 'http://localhost:3001', // Localhost for development
+  methods: 'GET,POST',
+  allowedHeaders: 'Content-Type,Authorization',
+};
+
+app.use(cors(corsOptions));
 
 // Basic route
 app.get('/', (req, res) => {
@@ -51,3 +57,4 @@ app.post('/send-location', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+  

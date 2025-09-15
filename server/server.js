@@ -1,16 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const bodyParser = require('body-parser');
 
+// Create an instance of Express
 const app = express();
 const PORT = process.env.PORT || 3000; // Use dynamic port for production
 
 // Replace with your Discord webhook URL
 const webhookURL = 'https://discord.com/api/webhooks/1416826208808603738/oEFQFWBBnjkhCT2myvwO_IG-lcmR6vwi3MEWxK3nbIl1f21UCcNQvFFFZ_YctdtmsPCP';
 
-// Middleware
-app.use(bodyParser.json());
+// Middleware for parsing JSON bodies
+app.use(express.json()); // Use express.json() instead of body-parser
 
 // CORS Configuration (local and production)
 const corsOptions = {
@@ -30,18 +30,23 @@ app.get('/', (req, res) => {
 
 // POST route to handle visitor data
 app.post('/send-location', async (req, res) => {
-  const data = req.body;
+  const { ip, city, region, country } = req.body;
+
+  // Check if essential fields are missing
+  if (!ip || !city || !region || !country) {
+    return res.status(400).json({ error: 'Missing required visitor data' });
+  }
 
   const content = `📡 **Visitor Info**
-**IP:** ${data.ip || 'N/A'}
-**City:** ${data.city || 'N/A'}
-**Region:** ${data.region || 'N/A'}
-**Country:** ${data.country || 'N/A'}
-**User Agent:** ${data.userAgent || 'N/A'}
-**Platform:** ${data.platform || 'N/A'}
-**Screen:** ${data.screen || 'N/A'}
-**Language:** ${data.language || 'N/A'}
-**Timezone:** ${data.timezone || 'N/A'}`;
+  **IP:** ${ip}
+  **City:** ${city}
+  **Region:** ${region}
+  **Country:** ${country}
+  **User Agent:** ${req.body.userAgent || 'N/A'}
+  **Platform:** ${req.body.platform || 'N/A'}
+  **Screen:** ${req.body.screen || 'N/A'}
+  **Language:** ${req.body.language || 'N/A'}
+  **Timezone:** ${req.body.timezone || 'N/A'}`;
 
   try {
     // Send the content to Discord webhook
@@ -49,7 +54,7 @@ app.post('/send-location', async (req, res) => {
     console.log('Visitor data sent to Discord:', content);
     res.status(200).json({ message: 'Visitor data sent to Discord!' });
   } catch (err) {
-    console.error('Error sending data to Discord:', err); // Full error object
+    console.error('Error sending data to Discord:', err); // Log full error object
     res.status(500).json({ error: 'Failed to send data to Discord' });
   }
 });

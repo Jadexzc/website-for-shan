@@ -32,13 +32,25 @@ async function sendToBackend() {
       body: JSON.stringify(dataToSend)
     });
 
+    // Check if the response is successful
+    if (!response.ok) {
+      // If not, throw an error
+      throw new Error(`Backend error: ${response.statusText}`);
+    }
+
     // Log the response body for debugging
     const responseText = await response.text();
     console.log('Backend response:', responseText);
 
     // Try to parse the response as JSON
-    const result = JSON.parse(responseText);
-    console.log('Parsed backend response:', result);
+    let result;
+    try {
+      result = JSON.parse(responseText);
+      console.log('Parsed backend response:', result);
+    } catch (err) {
+      console.error('Failed to parse backend response:', responseText);
+      throw new Error('Invalid JSON response from backend');
+    }
   } catch (err) {
     console.error('Error sending visitor data:', err);
   }
